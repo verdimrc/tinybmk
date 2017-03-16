@@ -20,8 +20,18 @@ def timing(f):
         result = f(*args, **kw)
         te = time()
         latency = (te-ts)/i
-        print('{}(*{}, **{}): {:,.0f} tps, {:.2f} us/txn'
-                .format(f.__name__, args, kw, 1.0/latency, latency*1000000.0))
+
+        # Mangle function to display
+        func = '{}(*{}, **{})'.format(f.__name__, args, kw)
+        maxlen=32
+        if len(func) > maxlen:
+            func = func[:maxlen-3] + '...'
+        else:
+            func = func + ' '* (maxlen-len(func))
+
+        print('{}\t{:,.1f} mtps\t{:.2f} us/txn'
+                .format(func, 1.0/(latency*1000000.0), latency*1000000.0))
+
         return result
     return wrap
 
@@ -29,6 +39,15 @@ def timing(f):
 def expdecay(i, x=0.5, factor=1.0):
     for _ in rng(i):
         y = math.exp(-factor*x)
+    return y
+
+def expdecay2(x=0.5, factor=1.0):
+    return math.exp(-factor*x)
+
+@timing
+def time_expdecay2(i):
+    for _ in rng(i):
+        y = expdecay2()
     return y
 
 cy_expdecay = timing(cyexpdecay.cy_expdecay)
@@ -52,5 +71,5 @@ if __name__ == '__main__':
     except Exception as e:
         pass
 
-    for f in [expdecay, cy_expdecay, cya_expdecay, cy_expdecay2, cya_expdecay2]:
+    for f in [expdecay, cy_expdecay, cya_expdecay, time_expdecay2, cy_expdecay2, cya_expdecay2]:
         f(i)
