@@ -36,7 +36,6 @@ static void timeit(const char *fname, double (*fun)()) {
     clock_gettime(CLOCK_REALTIME, &start);
     y = (*fun)();
     clock_gettime(CLOCK_REALTIME, &end);
-    latency = start.tv_sec;
 
     //See: http://www.guyrutenberg.com/2007/09/22/profiling-code-using-clock_gettime/
     if ((end.tv_nsec-start.tv_nsec)<0) {
