@@ -69,11 +69,14 @@ def cya_expdecay2(i):
         y = cyexpdecay.cya_expdecay2()
     return y
 
+
 if __name__ == '__main__':
     try: 
         i = int(sys.argv[1])
     except Exception as e:
         pass
 
-    for f in [expdecay, cy_expdecay, cya_expdecay, time_expdecay2, cy_expdecay2, cya_expdecay2]:
+    funcs = [expdecay, cy_expdecay, cya_expdecay, time_expdecay2, cy_expdecay2,
+            cya_expdecay2]
+    for f in funcs:
         f(i)
