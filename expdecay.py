@@ -12,6 +12,13 @@ rng = xrange if sys.version_info.major < 3 else range
 
 i = 1000000
 
+def fixlen(s, maxlen=16):
+    if len(s) > maxlen:
+        ss = s[:maxlen-3] + '...'
+    else:
+        ss = s + ' '* (maxlen-len(s))
+    return ss
+
 def timing(f):
     '''See: http://stackoverflow.com/a/27737385'''
     @wraps(f)
@@ -22,15 +29,12 @@ def timing(f):
         latency = (te-ts)/i
 
         # Mangle function to display
-        func = '{}(*{}, **{})'.format(f.__name__, args, kw)
-        maxlen=32
-        if len(func) > maxlen:
-            func = func[:maxlen-3] + '...'
-        else:
-            func = func + ' '* (maxlen-len(func))
-
-        print('{}\t{:,.1f} mtps\t{:.2f} us/txn'
-                .format(func, 1.0/(latency*1000000.0), latency*1000000.0))
+        #func = '{}(*{}, **{})'.format(f.__name__, args, kw)
+        func = fixlen(f.__name__)
+        py = fixlen('python-{}.{}'.format(sys.version_info.major,
+                        sys.version_info.minor))
+        print('{}\t{}\t{:,.1f} mtps\t{:.2f} us/txn'.format(fixlen(py), func,
+                1.0/(latency*1000000.0), latency*1000000.0))
 
         return result
     return wrap
