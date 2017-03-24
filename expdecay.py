@@ -33,7 +33,7 @@ def timing(f):
         func = fixlen(f.__name__)
         py = fixlen('python-{}.{}'.format(sys.version_info.major,
                         sys.version_info.minor))
-        print('{}\t{}\t{:,.1f} mtps\t{:.2f} us/txn'.format(fixlen(py), func,
+        print('{}\t{}\t{:,.1f} mtps\t{:.3f} us/txn'.format(fixlen(py), func,
                 1.0/(latency*1000000.0), latency*1000000.0))
 
         return result

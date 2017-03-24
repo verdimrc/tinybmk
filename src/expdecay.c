@@ -7,14 +7,26 @@
 #define MAXLEN 16
 #define BUFLEN (MAXLEN+2)   // 1 excess char, and '\0'.
 
+#ifdef SUPERMODE
+// Allow compiler to optimize loop, i.e., only 1 out of of MAXITER iteration.
+static double x = 0.5;
+static double lambda = 1.0;
+
+// Allow compiler to inline
+static double expdecay2();
+#else
+// Prevent compiler from optimizing loop, i.e., must iterate MAXITER times.
 static volatile double x = 0.5;
 static volatile double lambda = 1.0;
+
+// We purposely want to measure overhead of funtion call
+__attribute__((noinline)) static double expdecay2();
+#endif
 
 static void timeit(const char *fname, double (*fun)());
 static double expdecay();
 static double expdecay2();
 static double time_expdecay2();
-__attribute__((noinline)) static double expdecay2();
 static void fixlen(char *buf, const char *s);
 
 
@@ -48,10 +60,14 @@ static void timeit(const char *fname, double (*fun)()) {
     latency = ((((double)temp.tv_sec)*1000000.0
                     + ((double)temp.tv_nsec)/1000.0) / MAXITER);
 
+#ifdef SUPERMODE
+    fixlen(lang, "C optimize");
+#else
     fixlen(lang, "C");
+#endif
     //fixlen(lang, "0123456789abcdefxyzd");     // Rudimentary unit test :)
     fixlen(fixed_fname, fname);
-    printf("%s\t%s\t%.1lf mtps\t%.2lf us/txn\n", lang, fixed_fname,
+    printf("%s\t%s\t%.1lf mtps\t%.3lf us/txn\n", lang, fixed_fname,
             1.0/latency, latency);
 }
 
